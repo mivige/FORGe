@@ -3,9 +3,17 @@ from datetime import datetime
 from typing import Any, Dict, Optional
 from openai import OpenAI
 import os
+from dotenv import load_dotenv
+
 
 load_dotenv()
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+
+text_input = (
+        "Hi, this is Sarah Thompson. My policy number is PL-4829. "
+        "Yesterday, my car was rear-ended on Main Street in Denver. "
+        "The back bumper is pretty damaged, probably around $1,500 in repairs."
+    )
 
 def extract_incident_info(text: str) -> Dict[str, Any]:
     """
