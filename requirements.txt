@@ -11,4 +11,15 @@ requests>=2.31.0
 # Environment variables
 python-dotenv>=1.0.0
 
+# Features extraction
+openai>=1.0.0
+
+# Text-to-Speech dependencies
+elevenlabs==1.9.0
+pydub==0.25.1
+simpleaudio==1.0.4
+imageio[ffmpeg]==2.36.0
+numpy==1.26.4
+python-dotenv==1.0.1
+
 # Additional utilities
