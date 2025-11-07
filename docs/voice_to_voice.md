@@ -22,13 +22,6 @@ To create an AI voice-to-voice call answerer, you'll need to handle two main tas
 #### Open Source and On-Premise Options
 
 - **Rasa (for NLU/dialogue)** + **Vosk (ASR)** + **Coqui TTS**: You can build your system using these open-source libraries, giving you more control but requiring more setup and integration work.
-- Useful for companies with strict data privacy requirements or wanting to avoid cloud vendor lock-in.
-
-
-#### Programming Languages and Frameworks
-
-- Most APIs have Python, Node.js, or JavaScript integrations, with SDKs/examples for voice bots.
-- For real-time telephony (actual phone call handling), Asterisk or Twilio combined with Python or Node.js can be used as the integration layer.
 
 
 ### Typical Workflow Example
@@ -41,11 +34,24 @@ To create an AI voice-to-voice call answerer, you'll need to handle two main tas
 
 ### Getting Started Steps
 
-- Try a cloud platform like Google Dialogflow or Amazon Lex for fast results and easier integration.
-- For deeper customization or on-premise needs, learn about Vosk for offline ASR and platforms like Rasa for dialog.
-- Use public telephony APIs (Twilio, SignalWire) to handle actual phone calls and connect to your AI voice bot.
+For capturing audio (like from a microphone in real time) you’ll typically use a Python audio library such as sounddevice or PyAudio. Vosk integrates easily with these libraries.​​
 
-You have various possibilities: from plug-and-play cloud services to highly flexible open-source frameworks—each with trade-offs in setup time, cost, and control.
+1. Use the sounddevice library to stream audio from your microphone. Pass the streamed audio data to Vosk's recognizer as you receive it.
+
+2. Speech-to-Text: Vosk
+Vosk’s Python API is easy to use and works offline.
+
+Wrap it as a Python class (e.g., SpeechRecognizer) with a method like transcribe(audio) which returns the recognized text. This makes it reusable for any purpose, not just the call bot.​​
+
+3. NLU/Dialog Management: Rasa
+Rasa’s NLU can be invoked from Python code or via its HTTP API.
+
+You can wrap calls to the trained Rasa NLU model (intent detection, slot filling) in a service class. For full dialog management, run Rasa as a subprocess or container, connecting to it via API.​
+
+4. Text-to-Speech: Coqui TTS
+Coqui TTS lets you synthesize speech with a simple Python interface. Structure it as a SpeechSynthesizer class with a speak(text) method.
+
+Download a pre-trained model, load it at runtime, and synthesize to a WAV or audio stream for output.​​
 
 ***
 
