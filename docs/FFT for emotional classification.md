@@ -1,6 +1,4 @@
-<img src="https://r2cdn.perplexity.ai/pplx-full-logo-primary-dark%402x.png" style="height:64px;margin-right:32px"/>
-
-# I want to use a fast fourier transform to isolate specific frequencies that can be categorized as angry, how can implement this from an active voice call?
+Fast Fourier Transform for anger classification
 
 To implement a Fast Fourier Transform (FFT) to isolate specific frequencies associated with angry voice from an active voice call, you can follow these insights and steps:
 
