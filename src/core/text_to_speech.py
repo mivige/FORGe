@@ -10,7 +10,7 @@ load_dotenv()
 client = ElevenLabs(api_key=os.getenv("ELEVENLABS_API_KEY"))
 
 # What is in this variable is what it will say
-text_input="I think the text to speech works now!"
+text_input="I think the text to speech works now !"
 
 # Stream audio from ElevenLabs
 audio_stream = client.text_to_speech.convert(
