@@ -39,17 +39,20 @@ For capturing audio (like from a microphone in real time) you’ll typically use
 1. Use the sounddevice library to stream audio from your microphone. Pass the streamed audio data to Vosk's recognizer as you receive it.
 
 2. Speech-to-Text: Vosk
-Vosk’s Python API is easy to use and works offline.
 
-Wrap it as a Python class (e.g., SpeechRecognizer) with a method like transcribe(audio) which returns the recognized text. This makes it reusable for any purpose, not just the call bot.​​
+    Vosk’s Python API is easy to use and works offline.
+
+    Wrap it as a Python class (e.g., SpeechRecognizer) with a method like transcribe(audio) which returns the recognized text. This makes it reusable for any purpose, not just the call bot.​​
 
 3. NLU/Dialog Management: Rasa
-Rasa’s NLU can be invoked from Python code or via its HTTP API.
 
-You can wrap calls to the trained Rasa NLU model (intent detection, slot filling) in a service class. For full dialog management, run Rasa as a subprocess or container, connecting to it via API.​
+    Rasa’s NLU can be invoked from Python code or via its HTTP API.
+
+    You can wrap calls to the trained Rasa NLU model (intent detection, slot filling) in a service class. For full dialog management, run Rasa as a subprocess or container, connecting to it via API.​
 
 4. Text-to-Speech: Coqui TTS
-Coqui TTS lets you synthesize speech with a simple Python interface. Structure it as a SpeechSynthesizer class with a speak(text) method.
+
+    Coqui TTS lets you synthesize speech with a simple Python interface. Structure it as a SpeechSynthesizer class with a speak(text) method.
 
 Download a pre-trained model, load it at runtime, and synthesize to a WAV or audio stream for output.​​
 
