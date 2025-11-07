@@ -1,8 +1,4 @@
-<img src="https://r2cdn.perplexity.ai/pplx-full-logo-primary-dark%402x.png" style="height:64px;margin-right:32px"/>
-
-# can you make this more granular so that it is possible to categorize customer request with a matrix based on a LLM's interpretation and can later be processed by an unsupervised learning model which will decide what department to connect with
-
-Certainly! Here is a more granular and detailed issue classification matrix that is designed to help categorize customer requests in a way suitable for an LLM (Large Language Model) interpretation and later processing by an unsupervised learning model to determine the correct department routing. The categories include subcategories and typical request examples, allowing fine differentiation of customer intents and needs.
+classification matrix that is designed to help categorize customer requests
 
 
 | Main Category | Subcategory | Example Customer Request | Department/Handling Group |
@@ -43,7 +39,4 @@ Certainly! Here is a more granular and detailed issue classification matrix that
 - Department routes (final column) serve as labels to cluster or classify customer intents based on embeddings.
 - Unsupervised models can learn groupings around these labeled intents, allowing scale and adaptability for new unseen requests.
 
-This matrix serves as an enhanced framework for automatic categorization and route prediction combining AI interpretation with operational logic. It supports creating training data and guiding unsupervised algorithms to refine customer query routing efficiently.
-
-If desired, this can be further expanded or customized per industry or business specifics.
 
