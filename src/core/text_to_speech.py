@@ -67,4 +67,4 @@ def text_to_speech(text_input: str):
 def is_audio_playing() -> bool:
     """Check if audio is currently playing"""
     with _audio_lock:
-        return _audio_playing
+        return _audio_playing 
