@@ -1,0 +1,330 @@
+{
+  "name": "InsurTech Voice Claim Intake",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "claim-intake",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "55db9e36-48f5-42c9-89b3-4c83f9252268",
+      "name": "Webhook - Receive Claim",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1.1,
+      "position": [
+        -64,
+        -64
+      ],
+      "webhookId": "claim-intake"
+    },
+    {
+      "parameters": {
+        "operation": "upsert",
+        "base": {
+          "__rl": true,
+          "value": "appqHqK2DwpB4Sw63",
+          "mode": "list",
+          "cachedResultName": "Claims",
+          "cachedResultUrl": "https://airtable.com/appqHqK2DwpB4Sw63"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblgym1JKBHBXL0ar",
+          "mode": "list",
+          "cachedResultName": "Imported table",
+          "cachedResultUrl": "https://airtable.com/appqHqK2DwpB4Sw63/tblgym1JKBHBXL0ar"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Estimated Damage": "={{ $json.body.estimatedDamage }}",
+            "Approved Amount": 0,
+            "Policy ID": "={{ $json.body.policyId }}",
+            "Customer Name": "={{ $json.body.customerName }}",
+            "Incident Type": "={{ $json.body.incidentType }}",
+            "Description": "={{ $json.body.description }}",
+            "Location": "={{ $json.body.location }}",
+            "Date Reported": "={{ $now }}",
+            "Status": "Submitted"
+          },
+          "matchingColumns": [
+            "id",
+            "Policy ID",
+            "Customer Name",
+            "Date Reported",
+            "Incident Date",
+            "Incident Type",
+            "Description",
+            "Location",
+            "Status",
+            "Estimated Damage",
+            "Approved Amount",
+            "Agent Notes"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "Policy ID",
+              "displayName": "Policy ID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Customer Name",
+              "displayName": "Customer Name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Date Reported",
+              "displayName": "Date Reported",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Incident Date",
+              "displayName": "Incident Date",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Incident Type",
+              "displayName": "Incident Type",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Description",
+              "displayName": "Description",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Location",
+              "displayName": "Location",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Approved",
+                  "value": "Approved"
+                },
+                {
+                  "name": "Under Review",
+                  "value": "Under Review"
+                },
+                {
+                  "name": "Paid",
+                  "value": "Paid"
+                },
+                {
+                  "name": "Submitted",
+                  "value": "Submitted"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Estimated Damage",
+              "displayName": "Estimated Damage",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Approved Amount",
+              "displayName": "Approved Amount",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Agent Notes",
+              "displayName": "Agent Notes",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "e3d4111e-f1dc-48c8-9467-78cd33b65ed7",
+      "name": "Create Claim in Airtable",
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2,
+      "position": [
+        160,
+        -64
+      ],
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "n18Am3Fzlda2YDsU",
+          "name": "Airtable Personal Access Token account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { \n  \"success\": true, \n  \"claimId\": $json.id, \n  \"message\": \"Claim \" + $json.id + \" submitted successfully\",\n  \"status\": \"Submitted\",\n  \"customerName\": $('Webhook - Receive Claim').item.json.customerName\n} }}",
+        "options": {}
+      },
+      "id": "6495bf56-22b3-4266-9a38-882cd454a295",
+      "name": "Respond - Success",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        384,
+        -64
+      ]
+    }
+  ],
+  "pinData": {
+    "Webhook - Receive Claim": [
+      {
+        "json": {
+          "headers": {
+            "host": "mitch1058.app.n8n.cloud",
+            "user-agent": "curl/8.13.0",
+            "content-length": "245",
+            "accept": "*/*",
+            "accept-encoding": "gzip, br",
+            "cdn-loop": "cloudflare; loops=1; subreqs=1",
+            "cf-connecting-ip": "93.108.240.67",
+            "cf-ew-via": "15",
+            "cf-ipcountry": "PT",
+            "cf-ray": "99ae18fb86c3bd0e-LIS",
+            "cf-visitor": "{\"scheme\":\"https\"}",
+            "cf-worker": "n8n.cloud",
+            "content-type": "application/json",
+            "x-forwarded-for": "93.108.240.67, 172.68.103.99",
+            "x-forwarded-host": "mitch1058.app.n8n.cloud",
+            "x-forwarded-port": "443",
+            "x-forwarded-proto": "https",
+            "x-forwarded-server": "traefik-prod-users-gwc-74-67bd674f6f-5vf92",
+            "x-is-trusted": "yes",
+            "x-real-ip": "93.108.240.67"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "policyId": "POL-001",
+            "customerName": "John Smith",
+            "incidentDate": "2024-11-01",
+            "incidentType": "Auto Accident",
+            "description": "Hit from behind at red light. Rear bumper damaged.",
+            "location": "Main St and 5th Ave",
+            "estimatedDamage": 3500
+          },
+          "webhookUrl": "https://mitch1058.app.n8n.cloud/webhook/claim-intake",
+          "executionMode": "production"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Webhook - Receive Claim": {
+      "main": [
+        [
+          {
+            "node": "Create Claim in Airtable",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Claim in Airtable": {
+      "main": [
+        [
+          {
+            "node": "Respond - Success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "ab7d89a3-355c-4fc7-8d02-d2585687173d",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "0f9b227d2d84f28d02c29ac5f2e74f13ab70b9a99d96da9de968dd11ca410a90"
+  },
+  "id": "33EmjPDnsT8Ig6dD",
+  "tags": []
+}
