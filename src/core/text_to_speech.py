@@ -31,8 +31,9 @@ def text_to_speech(text_input: str) -> float:
     # Stream audio from ElevenLabs
     audio_stream = client.text_to_speech.convert(
         voice_id="2EiwWnXFnvU5JabPnv8n",
-        model_id="eleven_multilingual_v2",
-        text=text_input
+        model_id="eleven_flash_v2_5",  # Flash model for maximum speed
+        text=text_input,
+        output_format="mp3_22050_32"  # Lower quality for faster streaming
     )
 
     # Combine all chunks from generator
@@ -42,7 +43,7 @@ def text_to_speech(text_input: str) -> float:
     audio = AudioSegment.from_file(io.BytesIO(audio_bytes), format="mp3")
 
     # Add small silence to avoid cutoff at start
-    silence = AudioSegment.silent(duration=100)
+    silence = AudioSegment.silent(duration=0)
     audio = silence + audio
     
     # Calculate actual duration
