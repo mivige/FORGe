@@ -1,5 +1,11 @@
 # FORGe
 
+**AI-Powered Voice Claim Intake System**
+
+Built for the FORGe AI Hackathon in Lisbon 2025, this system demonstrates an intelligent voice interface for insurance claim processing. Using real-time speech recognition, natural language understanding, and text-to-speech, it guides callers through claim submission while detecting emergencies, monitoring frustration, and extracting structured data. The system integrates with n8n automation workflows to automatically create claims and generate tasks in Jira for follow-up.
+
+---
+
 ## Running the System
 
 ### Prerequisites

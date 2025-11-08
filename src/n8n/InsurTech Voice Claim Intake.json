@@ -410,6 +410,119 @@
           "name": "Airtable Personal Access Token account 2"
         }
       }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Extract claim data from webhook\nconst data = $json.body ?? $json;\n\n// Choose email + Jira assignee email\nlet email;\nlet assigneeEmail;\nlet priority = \"Medium\";\n\nswitch ((data.incidentType || \"\").trim()) {\n  case \"Auto Accident\":\n    email = \"claims_auto@yourcompany.com\";\n    assigneeEmail = \"auto_team_lead@yourcompany.com\";\n    priority = \"High\";\n    break;\n  case \"Theft\":\n    email = \"claims_theft@yourcompany.com\";\n    assigneeEmail = \"theft_team_lead@yourcompany.com\";\n    priority = \"High\";\n    break;\n  case \"Fire\":\n    email = \"claims_fire@yourcompany.com\";\n    assigneeEmail = \"fire_team_lead@yourcompany.com\";\n    priority = \"Highest\";\n    break;\n  default:\n    email = \"claims_general@yourcompany.com\";\n    assigneeEmail = \"claims_general@yourcompany.com\";\n    break;\n}\n\nconst subject = `New ${data.incidentType || \"Claim\"} – Policy ${data.policyId || \"\"}`;\nconst body = `\n<p><strong>New Claim Received</strong></p>\n<p><strong>Policy ID:</strong> ${data.policyId || \"\"}</p>\n<p><strong>Customer:</strong> ${data.customerName || \"\"}</p>\n<p><strong>Incident Type:</strong> ${data.incidentType || \"\"}</p>\n<p><strong>Date:</strong> ${data.incidentDate || \"\"}</p>\n<p><strong>Location:</strong> ${data.location || \"\"}</p>\n<p><strong>Estimated Damage:</strong> $${data.estimatedDamage ?? 0}</p>\n<p><strong>Description:</strong><br/>${data.description || \"\"}</p>\n<p>– Automated Claim Intake System</p>\n`;\n\nconst jira = {\n  project_key: \"CLAIMS\",\n  summary: `${data.incidentType || \"Claim\"} – ${data.policyId || \"\"}`,\n  description: [\n    `Policy ID: ${data.policyId || \"\"}`,\n    `Customer: ${data.customerName || \"\"}`,\n    `Incident Type: ${data.incidentType || \"\"}`,\n    `Date: ${data.incidentDate || \"\"}`,\n    `Location: ${data.location || \"\"}`,\n    `Estimated Damage: $${data.estimatedDamage ?? 0}`,\n    \"\",\n    \"Description:\",\n    `${data.description || \"\"}`\n  ].join(\"\\n\"),\n  assignee_email: assigneeEmail, // we’ll resolve this next\n  issuetype: \"Task\",\n  priority\n};\n\nreturn [\n  {\n    json: {\n      ...data,\n      email,\n      subject,\n      body,\n      jira\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        160,
+        96
+      ],
+      "id": "3760ca12-28d2-4ed7-bad3-75da25bf5069",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{$json.email}}",
+        "subject": "={{$json.subject}}",
+        "message": "={{$json.body}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        384,
+        96
+      ],
+      "id": "62a46e3b-ca4a-4ce7-be10-44a5b5697086",
+      "name": "Send a message",
+      "webhookId": "94ff8a4f-a1f3-4b79-a9a2-c97bda069d9f",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "e4h1DSVeeidHMiXY",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://forgeai1.atlassian.net/rest/api/3/user/search?query={{$json.jira.assignee_email}}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        384,
+        288
+      ],
+      "id": "371af642-c2e3-48c4-ae66-f5a0cca4c1e1",
+      "name": "HTTP Request",
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "URNg5DyZ44WJNVRv",
+          "name": "Unnamed credential"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get the first user from Jira response\nconst users = $json;\n\nif (!Array.isArray(users) || users.length === 0) {\n  throw new Error(\"No Jira user found for \" + $json.jira.assignee_email);\n}\n\nconst accountId = users[0].accountId;\n\n// Merge accountId into the original claim data\nconst claim = $item(0).$node[\"Code\"].json; // <- name of your first code node\nclaim.jira.assignee = accountId;\n\nreturn [{ json: claim }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        592,
+        288
+      ],
+      "id": "e5daa51b-f757-4ef4-9d8d-7dfa8ce14990",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "project": {
+          "__rl": true,
+          "value": "=={{$json.jira.project_key}}",
+          "mode": "id"
+        },
+        "issueType": {
+          "__rl": true,
+          "value": "=={{$json.jira.issuetype}}",
+          "mode": "id"
+        },
+        "summary": "=={{$json.jira.summary}}",
+        "additionalFields": {
+          "assignee": {
+            "__rl": true,
+            "value": "{{$json.jira.assignee}}",
+            "mode": ""
+          }
+        }
+      },
+      "type": "n8n-nodes-base.jira",
+      "typeVersion": 1,
+      "position": [
+        800,
+        288
+      ],
+      "id": "f9df4dfd-301f-4116-82bb-688de46d1bd1",
+      "name": "Create an issue",
+      "credentials": {
+        "jiraSoftwareCloudApi": {
+          "id": "zvD3QTt6k5kONwlE",
+          "name": "Jira SW Cloud account"
+        }
+      }
     }
   ],
   "pinData": {
@@ -463,6 +576,11 @@
             "node": "Create Claim in Airtable",
             "type": "main",
             "index": 0
+          },
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
           }
         ]
       ]
@@ -482,13 +600,51 @@
           }
         ]
       ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "Create an issue",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "42628cc1-f6e7-4949-8d52-60b125421851",
+  "versionId": "b0b45894-9654-4559-8508-6c5b60442217",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "0f9b227d2d84f28d02c29ac5f2e74f13ab70b9a99d96da9de968dd11ca410a90"
