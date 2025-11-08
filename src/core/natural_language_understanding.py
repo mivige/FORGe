@@ -16,6 +16,7 @@ from typing import Dict, Any, List
 from enum import Enum
 import requests
 from requests.exceptions import RequestException
+import re
 
 load_dotenv()
 
@@ -182,13 +183,26 @@ class ConversationalNLU:
                 n8n_url = os.getenv("N8N_WEBHOOK_URL")
                 if n8n_url:
                     try:
+                        # Fill missing values with 'unknown' for identifier/name fields or 'unspecified' for descriptive fields.
+                        def _fill_missing(key, val):
+                            if val is None or (isinstance(val, str) and val.strip() == ""):
+                                if key in ("policyId", "customerName"):
+                                    return "unknown"
+                                return "unspecified"
+                            return val
+
+                        clean_claim = {k: _fill_missing(k, v) for k, v in self.claim_data.items()}
+
                         payload = {
-                            "claim_data": self.claim_data,
+                            "claim_data": clean_claim,
                             "emergency": True,
                             "emergency_reason": emergency_reason,
                             "partial": True
                         }
-                        resp = requests.post(n8n_url, json=payload, timeout=5)
+                        # Debug log the exact payload and headers
+                        print(f"[NLU] Posting partial claim to n8n: {json.dumps(payload, ensure_ascii=False)}")
+                        resp = requests.post(n8n_url, json=payload, headers={"Content-Type": "application/json"}, timeout=8)
+                        print(f"[NLU] n8n response: {resp.status_code} {resp.text}")
                         resp.raise_for_status()
                         partial_sent = True
                     except RequestException as e:
