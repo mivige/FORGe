@@ -1,7 +1,7 @@
 from elevenlabs import ElevenLabs
 from pydub import AudioSegment
+from pydub.playback import play
 import io
-import simpleaudio as sa
 import os
 from dotenv import load_dotenv
 
@@ -29,20 +29,10 @@ def text_to_speech(text_input: str):
     # Decode MP3 to AudioSegment
     audio = AudioSegment.from_file(io.BytesIO(audio_bytes), format="mp3")
 
-    # ✅ Add 0.5 seconds of silence to avoid cutoff at start
+    # Add small silence to avoid cutoff at start
     silence = AudioSegment.silent(duration=100)
     audio = silence + audio
 
-    # Debug info
-    # print(f"Audio loaded — duration: {audio.duration_seconds:.2f}s, channels: {audio.channels}")
-
-    # Play from memory using simpleaudio
-    play_obj = sa.play_buffer(
-        audio.raw_data,
-        num_channels=audio.channels,
-        bytes_per_sample=audio.sample_width,
-        sample_rate=audio.frame_rate
-    )
-    play_obj.wait_done()
-    # print("Playback finished.")
+    # Play and wait for completion using pydub's play (blocks until done)
+    #play(audio)
     return

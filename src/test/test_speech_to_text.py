@@ -17,7 +17,7 @@ def test_real_time_stt():
     Test real-time speech-to-text with microphone input.
     """
     # Path to the downloaded Vosk model
-    MODEL_PATH = os.path.join(os.path.dirname(__file__), '../../models', 'vosk-model-small-en-us-0.15')
+    MODEL_PATH = os.path.join(os.path.dirname(__file__), '../../models', 'vosk-model-en-us-0.22')
     
     print("=" * 60)
     print("Real-Time Speech-to-Text Test")

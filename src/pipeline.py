@@ -12,7 +12,6 @@ Call ends when ConversationState is COMPLETE or EMERGENCY_TRANSFER.
 from core.speech_to_text import SpeechToText
 from core.natural_language_understanding import ConversationalNLU, ConversationState
 from core.text_to_speech import text_to_speech
-from core.text_to_ticket import text_to_incident_ticket
 from core.post_to_n8n import N8NWebhookClient
 import os
 from dotenv import load_dotenv
