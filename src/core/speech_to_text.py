@@ -277,7 +277,7 @@ class SpeechToText:
                 
                 # Handle the result
                 if result['text']:
-                    if callback:
+                    if callback and not result['partial']:
                         # Use custom callback if provided
                         callback(result)
                     else:

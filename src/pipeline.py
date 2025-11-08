@@ -11,9 +11,10 @@ Call ends when ConversationState is COMPLETE or EMERGENCY_TRANSFER.
 
 from core.speech_to_text import SpeechToText
 from core.natural_language_understanding import ConversationalNLU, ConversationState
-from core.text_to_speech import text_to_speech
+from core.text_to_speech import text_to_speech, is_audio_playing
 from core.post_to_n8n import N8NWebhookClient
 import os
+import time
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -41,7 +42,8 @@ def run_call_handler():
     print("\n[SYSTEM] Initializing components...")
     
     # Check for Vosk model
-    model_path = "models/vosk-model-en-us-0.22"
+    model_path = "models/vosk-model-small-en-us-0.15"
+#    model_path = "models/vosk-model-en-us-0.22"
     if not os.path.exists(model_path):
         model_path = "models/vosk-model-small-en-us-0.15"
     
@@ -69,6 +71,9 @@ def run_call_handler():
     
     try:
         text_to_speech(greeting_text)
+        # Wait until greeting finishes playing
+        while is_audio_playing():
+            time.sleep(0.1)  # Check every 100ms
     except Exception as e:
         print(f"[ERROR] TTS failed for greeting: {e}")
     
@@ -117,9 +122,23 @@ def run_call_handler():
             
             # Convert response to speech and play
             try:
+                # Pause audio capture while assistant is speaking
+                stt.audio_capture.stop_stream()
+                
                 text_to_speech(response_text)
+                # Wait until audio finishes playing
+                while is_audio_playing():
+                    time.sleep(0.1)  # Check every 100ms
+                
+                # Resume audio capture
+                stt.audio_capture.start_stream()
             except Exception as e:
                 print(f"[ERROR] TTS failed: {e}")
+                # Make sure to resume audio capture even if TTS fails
+                try:
+                    stt.audio_capture.start_stream()
+                except:
+                    pass
             
             print("-" * 60 + "\n")
             
@@ -159,7 +178,13 @@ def run_call_handler():
                 print(f"\n[ASSISTANT] {goodbye_text}")
                 
                 try:
+                    # Pause audio capture for goodbye message
+                    stt.audio_capture.stop_stream()
+                    
                     text_to_speech(goodbye_text)
+                    # Wait until audio finishes playing
+                    while is_audio_playing():
+                        time.sleep(0.1)  # Check every 100ms
                 except Exception as e:
                     print(f"[ERROR] TTS failed for goodbye: {e}")
                 
@@ -172,11 +197,17 @@ def run_call_handler():
             import traceback
             traceback.print_exc()
             
+            # Pause audio capture for error message
+            stt.audio_capture.stop_stream()
+            
             # Try to say error message
             try:
                 error_msg = "I apologize, I'm having technical difficulties. Let me connect you with an agent."
                 print(f"[ASSISTANT] {error_msg}")
                 text_to_speech(error_msg)
+                # Wait until audio finishes playing
+                while is_audio_playing():
+                    time.sleep(0.1)  # Check every 100ms
             except:
                 pass
             
