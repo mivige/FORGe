@@ -7,7 +7,7 @@ import sys
 import os
 
 # Add src to path to import the module
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'src'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../../src'))
 
 from core.speech_to_text import SpeechToText, AudioCapture
 
@@ -17,7 +17,7 @@ def test_real_time_stt():
     Test real-time speech-to-text with microphone input.
     """
     # Path to the downloaded Vosk model
-    MODEL_PATH = os.path.join(os.path.dirname(__file__), 'models', 'vosk-model-small-en-us-0.15')
+    MODEL_PATH = os.path.join(os.path.dirname(__file__), '../../models', 'vosk-model-small-en-us-0.15')
     
     print("=" * 60)
     print("Real-Time Speech-to-Text Test")
