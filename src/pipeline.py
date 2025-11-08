@@ -82,6 +82,7 @@ def run_call_handler():
     
     # Track call state
     call_active = True
+    waiting_for_callback_choice = False  # Track if we're waiting for user's choice
     
     def handle_speech_callback(transcription_result):
         """
@@ -90,7 +91,7 @@ def run_call_handler():
         Args:
             transcription_result: Dict with 'text', 'partial', 'result' keys
         """
-        nonlocal call_active
+        nonlocal call_active, waiting_for_callback_choice
         
         # Only process complete (non-partial) transcriptions
         if transcription_result.get('partial'):
@@ -102,6 +103,40 @@ def run_call_handler():
             return
         
         print(f"[CALLER] {user_input}")
+        
+        # Special handling if waiting for callback choice
+        if waiting_for_callback_choice:
+            user_lower = user_input.lower()
+            
+            # Pause audio for response
+            stt.audio_capture.stop_stream()
+            
+            if any(word in user_lower for word in ['agent', 'now', 'speak', 'talk', 'line', 'wait']):
+                response = "I'm transferring you to an agent now. Please hold."
+                print(f"[ASSISTANT] {response}")
+                text_to_speech(response)
+                while is_audio_playing():
+                    time.sleep(0.1)
+                print("[SYSTEM] Transferring to agent...")
+            elif any(word in user_lower for word in ['call back', 'callback', 'later', 'back later']):
+                response = "Perfect. We'll call you back later. Have a great day!"
+                print(f"[ASSISTANT] {response}")
+                text_to_speech(response)
+                while is_audio_playing():
+                    time.sleep(0.1)
+                print("[SYSTEM] Callback scheduled")
+            else:
+                response = "I'm sorry, I didn't understand. Would you like to speak with an agent now, or be called back later?"
+                print(f"[ASSISTANT] {response}")
+                text_to_speech(response)
+                while is_audio_playing():
+                    time.sleep(0.1)
+                stt.audio_capture.start_stream()
+                return  # Keep waiting for valid choice
+            
+            call_active = False
+            stt.stop_listening()
+            return
         
         try:
             # Process through NLU
@@ -182,23 +217,8 @@ def run_call_handler():
                 except Exception as e:
                     print(f"[ERROR] Failed to create ticket: {e}")
                 
-                # Say goodbye
-                goodbye_text = "Your claim has been submitted successfully. Thank you for calling. Have a great day!"
-                print(f"\n[ASSISTANT] {goodbye_text}")
-                
-                try:
-                    # Pause audio capture for goodbye message
-                    stt.audio_capture.stop_stream()
-                    
-                    text_to_speech(goodbye_text)
-                    # Wait until audio finishes playing
-                    while is_audio_playing():
-                        time.sleep(0.1)  # Check every 100ms
-                except Exception as e:
-                    print(f"[ERROR] TTS failed for goodbye: {e}")
-                
-                call_active = False
-                stt.stop_listening()
+                # Set flag to handle user's choice in next callback
+                waiting_for_callback_choice = True
                 return
                 
         except Exception as e:

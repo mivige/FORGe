@@ -15,16 +15,12 @@ client = ElevenLabs(api_key=os.getenv("ELEVENLABS_API_KEY"))
 _audio_playing = False
 _audio_lock = threading.Lock()
 
-def text_to_speech(text_input: str) -> float:
+def text_to_speech(text_input: str):
     """
     Convert text to speech and play it asynchronously.
-    Returns the estimated duration so caller can sleep if needed.
 
     Args:
         text_input: The text to be converted to speech.
-        
-    Returns:
-        Actual audio duration in seconds
     """
     global _audio_playing
     
@@ -41,13 +37,6 @@ def text_to_speech(text_input: str) -> float:
 
     # Decode MP3 to AudioSegment
     audio = AudioSegment.from_file(io.BytesIO(audio_bytes), format="mp3")
-
-    # Add small silence to avoid cutoff at start
-    silence = AudioSegment.silent(duration=0)
-    audio = silence + audio
-    
-    # Calculate actual duration
-    duration = len(audio) / 1000.0  # Convert ms to seconds
 
     # Convert to numpy array for sounddevice
     samples = np.array(audio.get_array_of_samples())
@@ -74,9 +63,6 @@ def text_to_speech(text_input: str) -> float:
     # Start playback in background thread
     thread = threading.Thread(target=play_audio, daemon=True)
     thread.start()
-    
-    # Return actual duration
-    return duration
 
 def is_audio_playing() -> bool:
     """Check if audio is currently playing"""

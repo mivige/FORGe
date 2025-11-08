@@ -96,7 +96,7 @@ class ConversationalNLU:
                 self.confirm_attempts = 0
                 self.conversation_history.append("ASSISTANT: Claim confirmed by caller.")
                 return {
-                    "response": "Thank you — your claim has been recorded. We will follow up shortly. Goodbye.",
+                    "response": "Thank you. Your claim has been created successfully. Now I can either put you in line to speak with an agent or you can ask to be called back later. Which would you prefer?",
                     "should_transfer": False,
                     "transfer_reason": "",
                     "frustration_score": self.frustration_score,
@@ -110,7 +110,7 @@ class ConversationalNLU:
                 self.state = ConversationState.GATHERING_INCIDENT_DETAILS
                 self.conversation_history.append("ASSISTANT: Caller requested changes; returning to information collection.")
                 return {
-                    "response": "I understand you'd like to make changes. Which detail would you like to update? (policy number, name, incident description, location, estimated damage, incident date)",
+                    "response": "I understand you'd like to make changes. Which detail would you like to update?",
                     "should_transfer": False,
                     "transfer_reason": "",
                     "frustration_score": self.frustration_score,
@@ -206,11 +206,23 @@ class ConversationalNLU:
             if is_complete and self.state not in (ConversationState.TO_REVIEW, ConversationState.COMPLETE):
                 # Move to TO_REVIEW and ask the caller to verify the extracted claim
                 self.state = ConversationState.TO_REVIEW
-                summary = json.dumps(self.claim_data, indent=2)
-                confirm_text = (
-                    "I've collected the following information: "
-                    f"{summary}. Is this information correct? Please say 'yes' to confirm or tell me what to change."
-                )
+                
+                # Create a brief natural summary instead of dumping JSON
+                summary_parts = []
+                if self.claim_data.get("policyId"):
+                    summary_parts.append(f"policy number {self.claim_data['policyId']}")
+                if self.claim_data.get("customerName"):
+                    summary_parts.append(f"under the name {self.claim_data['customerName']}")
+                if self.claim_data.get("incidentType"):
+                    summary_parts.append(f"for a {self.claim_data['incidentType']}")
+                if self.claim_data.get("location"):
+                    summary_parts.append(f"at {self.claim_data['location']}")
+                if self.claim_data.get("incidentDate"):
+                    summary_parts.append(f"on {self.claim_data['incidentDate']}")
+                
+                summary = ", ".join(summary_parts)
+                confirm_text = f"Let me confirm: I have {summary}. Is this correct?"
+                
                 # Add assistant confirmation prompt to history
                 self.conversation_history.append(f"ASSISTANT: {confirm_text}")
                 return {
@@ -341,7 +353,7 @@ Remember: Return ONLY valid JSON. Be empathetic and guide the conversation natur
         Returns:
             Greeting text for text_to_speech.py
         """
-        greeting = "Hello! Thank you for calling. I'm here to help with your insurance claim. How may I assist you today?"
+        greeting = "Hello! Thank you for calling InsurTech. How may I assist you today?"
         self.conversation_history.append(f"ASSISTANT: {greeting}")
         return greeting
     
