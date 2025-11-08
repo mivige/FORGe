@@ -96,7 +96,7 @@ class ConversationalNLU:
                 self.confirm_attempts = 0
                 self.conversation_history.append("ASSISTANT: Claim confirmed by caller.")
                 return {
-                    "response": "Thank you. Your claim has been created successfully. Now I can either put you in line to speak with an agent or you can ask to be called back later. Which would you prefer?",
+                    "response": "Thank you! Your claim has been created successfully. Now you have to speak to a human operator to finish the report. I can either put you in line to speak with an agent now, the estimated waiting time is 5 minutes, or you can ask to be called back later. Which would you prefer?",
                     "should_transfer": False,
                     "transfer_reason": "",
                     "frustration_score": self.frustration_score,
@@ -189,7 +189,7 @@ class ConversationalNLU:
                 }
             
             # Check if frustration score is too high
-            if self.frustration_score > 7.0:
+            if self.frustration_score > 5.0:
                 self.state = ConversationState.EMERGENCY_TRANSFER
                 return {
                     "response": "I can understand that there is a bit of frustration. Let me connect you with a specialist who can better help you right away. Please hold.",

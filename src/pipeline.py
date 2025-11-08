@@ -42,8 +42,8 @@ def run_call_handler():
     print("\n[SYSTEM] Initializing components...")
     
     # Check for Vosk model
-    model_path = "models/vosk-model-small-en-us-0.15"
-#    model_path = "models/vosk-model-en-us-0.22"
+    #model_path = "models/vosk-model-small-en-us-0.15"
+    model_path = "models/vosk-model-en-us-0.22"
     if not os.path.exists(model_path):
         model_path = "models/vosk-model-small-en-us-0.15"
     
